@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">UserGroup</string>
+    <string name="enter_your_email">Enter Your Email</string>
+    <string name="enter_your_password">Enter Your Password</string>
+    <string name="login">Login</string>
+    <string name="i_do_not_have_an_account">I Do Not Have An Account</string>
+    <string name="registration">Registration</string>
+    <string name="i_have_an_account">I Have An Account</string>
+</resources>
