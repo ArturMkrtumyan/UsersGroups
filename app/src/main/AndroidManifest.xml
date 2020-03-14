@@ -19,7 +19,9 @@
             android:parentActivityName=".screens.UserActivity">
 
         </activity>
-        <activity android:name=".screens.UserActivity" />
+        <activity
+            android:name=".screens.UserActivity"
+            android:launchMode="singleTop" />
         <activity
             android:name=".screens.AddEditGroupActivity"
             android:parentActivityName=".screens.GroupActivity" />

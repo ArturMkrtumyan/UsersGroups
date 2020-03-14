@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.usergroup.firebase.FirebaseClient;
 import com.example.usergroup.room.GroupDao;
@@ -13,13 +14,10 @@ import com.example.usergroup.room.MyRoomDatabase;
 import com.example.usergroup.room.UserDao;
 import com.example.usergroup.room.UserEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GroupAndUserRepository {
-    FirebaseClient firebaseClient;
-    List<GroupEntity> servergroupEntities;
-
+    FirebaseClient firebaseClient = new FirebaseClient();
     private GroupDao groupDao;
     private UserDao userDao;
     private LiveData<List<GroupEntity>> allGroups;
@@ -31,14 +29,70 @@ public class GroupAndUserRepository {
         allGroups = groupDao.getallGroups();
         userDao = database.getUserDao();
         allUsers = userDao.getallUsers();
-        servergroupEntities = new ArrayList<>();
-        firebaseClient = new FirebaseClient();
     }
 
-    public void synk(CollBack collback) {
-        // firebaseClient.addDataToDatabase(new GroupEntity("VAch"));
-        Log.d("MyLog", "Read as " + servergroupEntities.isEmpty());
+    public void sync() {
+        firebaseClient.readGroupToDatabase(new FirebaseClient.ReadGroupFromFirebase() {
+            @Override
+            public void readGroup(final List<GroupEntity> groupEntities) {
+                Log.d("MyLog","Server group size is "+groupEntities.size());
 
+                if (groupEntities != null && groupEntities.size() != 0) {
+                    new DeleteAllGroupAsyncTask(groupDao).execute();
+                    new InsertListGroupAsyncTask(groupDao).execute(groupEntities);
+                }
+                allGroups.observeForever(new Observer<List<GroupEntity>>() {
+                    @Override
+                    public void onChanged(List<GroupEntity> groupEntityList) {
+                        if (groupEntities != null) {
+                            if (groupEntityList.size() != 0) {
+                                for (GroupEntity localgroup : groupEntityList) {
+                                    if (!groupEntities.contains(localgroup)) {
+                                        firebaseClient.addGroupToDatabase(localgroup);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        firebaseClient.readUserToDatabase(new FirebaseClient.ReadUserFromFirebase() {
+            @Override
+            public void readUser(final List<UserEntity> userEntities) {
+                if (userEntities != null) {
+                    new DeleteAllUserAsyncTask(userDao).execute();
+                    new InsertListUserAsyncTask(userDao).execute(userEntities);
+                }
+                allUsers.observeForever(new Observer<List<UserEntity>>() {
+                    @Override
+                    public void onChanged(List<UserEntity> userEntitiesList) {
+                        Log.d("MyLog","Local user size is "+userEntitiesList.size());
+                        if (userEntities != null) {
+                            for (UserEntity localUser : userEntitiesList) {
+                                if (!userEntities.contains(localUser)) {
+                                    firebaseClient.addUserToDatabase(localUser);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+        });
+
+    }
+
+    public void deleteServerGroup(GroupEntity groupEntity) {
+        firebaseClient.deleteGroupFromDatabase(groupEntity);
+    }
+
+    public void deleteServerUser(UserEntity userEntity) {
+        firebaseClient.deleteUserFromDatabase(userEntity);
+    }
+
+    public void insertList(List<GroupEntity> list) {
+        new InsertListGroupAsyncTask(groupDao).execute(list);
     }
 
     public void insert(GroupEntity group) {
@@ -76,7 +130,7 @@ public class GroupAndUserRepository {
     }
 
 
-    private static class InsertGroupAsyncTask extends AsyncTask<GroupEntity, Void, Void> {
+    public static class InsertGroupAsyncTask extends AsyncTask<GroupEntity, Void, Void> {
         private GroupDao groupDao;
 
         public InsertGroupAsyncTask(GroupDao groupDao) {
@@ -86,6 +140,62 @@ public class GroupAndUserRepository {
         @Override
         protected Void doInBackground(GroupEntity... groups) {
             groupDao.insert(groups[0]);
+            return null;
+        }
+    }
+
+    public static class InsertListGroupAsyncTask extends AsyncTask<List<GroupEntity>, Void, Void> {
+        GroupDao groupDao;
+
+        public InsertListGroupAsyncTask(GroupDao groupDao) {
+            this.groupDao = groupDao;
+        }
+
+        @Override
+        protected Void doInBackground(List<GroupEntity>... lists) {
+            groupDao.insertList(lists[0]);
+            return null;
+        }
+    }
+
+    public static class DeleteAllGroupAsyncTask extends AsyncTask<Void, Void, Void> {
+        GroupDao groupDao;
+
+        public DeleteAllGroupAsyncTask(GroupDao groupDao) {
+            this.groupDao = groupDao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            groupDao.deleteAll();
+            return null;
+        }
+    }
+
+    public static class InsertListUserAsyncTask extends AsyncTask<List<UserEntity>, Void, Void> {
+        UserDao userDao;
+
+        public InsertListUserAsyncTask(UserDao userDao) {
+            this.userDao = userDao;
+        }
+
+        @Override
+        protected Void doInBackground(List<UserEntity>... lists) {
+            userDao.insertList(lists[0]);
+            return null;
+        }
+    }
+
+    public static class DeleteAllUserAsyncTask extends AsyncTask<Void, Void, Void> {
+        UserDao userDao;
+
+        public DeleteAllUserAsyncTask(UserDao userDao) {
+            this.userDao = userDao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            userDao.deleteAll();
             return null;
         }
     }

@@ -58,7 +58,7 @@ public class AddEditGroupActivity extends AppCompatActivity {
         Intent data = new Intent();
         data.putExtra(GROUP_NAME, namegroup);
         int id = getIntent().getIntExtra(GROUP_ID, -1);
-        if (id != 1) {
+        if (id != -1) {
             data.putExtra(GROUP_ID, id);
         }
         setResult(RESULT_OK, data);

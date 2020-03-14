@@ -13,7 +13,8 @@ public class GroupEntity implements Serializable {
     private int groupId;
     @ColumnInfo(name = "group_name")
     private String name;
-     @Ignore
+
+    @Ignore
     public GroupEntity() {
     }
 

@@ -1,7 +1,6 @@
 package com.example.usergroup.screens;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -14,14 +13,11 @@ import android.widget.Toast;
 
 import com.example.usergroup.R;
 
-import static com.example.usergroup.screens.UserActivity.ADD_USER_REQUEST;
-
 public class AddUserActivity extends AppCompatActivity {
     public static final String USER_NAME = "USER_NAME";
     public static final String USER_SURNAME = "USER_SURNAME";
 
-
-    private  EditText userName;
+    private EditText userName;
     private EditText userSurname;
 
     @Override
@@ -45,15 +41,16 @@ public class AddUserActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_user:
+
                 saveUser();
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void saveUser() {
-       String nameuser = userName.getText().toString();
-       String surnameuser = userSurname.getText().toString();
-        if (nameuser.isEmpty() && surnameuser.isEmpty()) {
+        String nameuser = userName.getText().toString();
+        String surnameuser = userSurname.getText().toString();
+        if (nameuser.isEmpty() || surnameuser.isEmpty()) {
             Toast.makeText(AddUserActivity.this, "Please insert  username and surname", Toast.LENGTH_SHORT).show();
             return;
         }

@@ -64,7 +64,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupHolder>
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(listener!=null&& getAdapterPosition()!=RecyclerView.NO_POSITION){
+                    if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
                         onItemClickListener.onItemClick(groups.get(getAdapterPosition()));
                     }
                 }
@@ -75,14 +75,16 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupHolder>
     public interface OnItemClickLongListener {
         void onItemLongClick(GroupEntity group);
     }
-    public interface OnItemClickListener{
+
+    public interface OnItemClickListener {
         void onItemClick(GroupEntity group);
     }
 
     public void setOnItemClickLongListener(OnItemClickLongListener listener) {
         this.listener = listener;
     }
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
-        this.onItemClickListener=onItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 }

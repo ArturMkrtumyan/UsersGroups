@@ -23,6 +23,14 @@ public class GroupAndUserViewModel extends AndroidViewModel {
         allUsers = repository.getAllUsers();
     }
 
+    public void deleteServerGroup(GroupEntity groupEntity) {
+        repository.deleteServerGroup(groupEntity);
+    }
+
+    public void deleteServerUser(UserEntity userEntity) {
+        repository.deleteServerUser(userEntity);
+    }
+
     public void insert(GroupEntity group) {
         repository.insert(group);
     }
@@ -39,6 +47,9 @@ public class GroupAndUserViewModel extends AndroidViewModel {
         return allGroup;
     }
 
+    public void sync() {
+        repository.sync();
+    }
 
     public void insert(UserEntity user) {
         repository.insert(user);

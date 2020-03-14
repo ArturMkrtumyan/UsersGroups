@@ -14,8 +14,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.usergroup.CollBack;
-import com.example.usergroup.GroupAndUserRepository;
 import com.example.usergroup.room.GroupEntity;
 import com.example.usergroup.adapters.GroupAdapter;
 import com.example.usergroup.MyViewModelFactory;
@@ -34,7 +32,6 @@ public class GroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         FloatingActionButton floatingActionButton = findViewById(R.id.button_add_group);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +63,7 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 viewModel.delete(groupAdapter.getGroupat(viewHolder.getAdapterPosition()));
+                viewModel.deleteServerGroup(groupAdapter.getGroupat(viewHolder.getAdapterPosition()));
                 Toast.makeText(GroupActivity.this, "GroupEntity deleted", Toast.LENGTH_SHORT).show();
             }
         }).attachToRecyclerView(recyclerView);
@@ -89,22 +87,6 @@ public class GroupActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        new GroupAndUserRepository(getApplication()).synk(new CollBack() {
-            @Override
-            public void onSuccess() {
-                Toast.makeText(getApplicationContext(), "On success", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFail() {
-                Toast.makeText(getApplicationContext(), "On fai", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -130,4 +112,9 @@ public class GroupActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        viewModel.sync();
+    }
 }

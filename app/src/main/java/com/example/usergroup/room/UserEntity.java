@@ -1,6 +1,7 @@
 package com.example.usergroup.room;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "user_table")
@@ -10,6 +11,10 @@ public class UserEntity {
     private String nameUser;
     private String surnameUser;
     private int groupid;
+
+    @Ignore
+    public UserEntity() {
+    }
 
     public void setIdUser(int idUser) {
         this.idUser = idUser;
